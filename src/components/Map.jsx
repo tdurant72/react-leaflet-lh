@@ -3,13 +3,14 @@ import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from "react-leaflet";
 import ports from "../data/ports";
 import { useQuery } from "react-query";
-import { getFerries } from "../data/calls";
+import { getFerries, getIncidents } from "../data/calls";
 import ferryRoutes from "../data/ferryRoutes.json";
 import { terminalIcon } from "./terminalIcon";
 import { ferryIcon } from "./ferryIcon";
 import { dockedFerryIcon } from "./dockedFerryIcon";
 import RotatedMarker from "./RotatedMarker";
 // import "leaflet-marker-rotation";
+
 const Map = () => {
   const corner1 = L.latLng(38.523041, -71.663658);
   const corner2 = L.latLng(32.815684, -83.866225);
@@ -23,14 +24,25 @@ const Map = () => {
   };
   const {
     data: ferryData,
-    status,
-    error,
-    isLoading,
-    isError,
+    status: ferryStatus,
+    error: ferryError,
+    isLoading: ferryIsLoading,
+    isError: ferryIsError,
   } = useQuery("ferries", getFerries, {
     staleTime: 2000,
     cacheTime: 6000,
     refetchInterval: 60000,
+  });
+  const {
+    data: incidentData,
+    status: incidentStatus,
+    error: incidentError,
+    isLoading: incidentIsLoading,
+    isError: incidentIsError,
+  } = useQuery("incidents", getIncidents, {
+    staleTime: 900000,
+    cacheTime: 900000,
+    refetchInterval: 900000,
   });
   const onEachFeature = (feature, layer) => {
     console.log("line clicked", feature);
@@ -41,6 +53,7 @@ const Map = () => {
       // layer.bindPopup(popup);
     }
   };
+  console.log("incidentData", incidentData);
   return (
     <>
       <MapContainer
